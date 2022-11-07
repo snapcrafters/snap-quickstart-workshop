@@ -6,7 +6,7 @@ base: core22
 confinement: strict
 
 apps:
-  gtk-hello-world:
+  hello-world-gtk:
     command: src/hello-world-gtk
     plugs:
       - x11
