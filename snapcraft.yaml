@@ -16,5 +16,14 @@ parts:
   hello-world-gtk:
     plugin: dump
     source: .
+    override-build: |
+      set -eux
+      cd src
+      gcc $(pkg-config --cflags gtk4) -o hello-world-gtk hello-world-gtk.c $(pkg-config --libs gtk4)
+      cd ..
+      craftctl default
+    build-packages:
+      - pkgconf
+      - libgtk-4-dev
     stage-packages:
       - libgtk-4-1
