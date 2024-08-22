@@ -2,7 +2,7 @@ name: hello-world-gtk
 version: '0.1'
 summary: Gtk Hello World example
 description: A simple Gtk example
-base: core22
+base: core24
 confinement: strict
 
 apps:
