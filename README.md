@@ -83,15 +83,15 @@ parts:
 * `source` explains where to find the source code for this part. This can be a local directory, or it can be remote, such as a GitHub repository, or a zip file to download. We use `.` to specify the sources are in the current directory.
 * `stage-packages` describes what additional packages from [the Ubuntu archive](https://packages.ubuntu.com/jammy/allpackages) your application needs. These are the applications you normally install using `apt` in order to get your app to work on Ubuntu.
 
-Finally, we define how to start your application. One snap can have multiple apps inside of it. In this case, we only have a single command: the webserver.
+Now you define how to start your application. One snap can have multiple apps inside of it. In this case, we only have a single command: the webserver.
 
 ```yaml
 apps:
   hello-world-gtk:
+    extensions: [gnome]
     command: src/hello-world-gtk
     plugs:
-      - x11
-      - wayland
+      - removable-media
 ```
 
 * `command` specifies how to start your application. This is relative from the root of your snap.
@@ -103,11 +103,27 @@ Note that there is a difference between the permissions that an application _req
 * Global auto-connects: some interfaces, such as `network-bind` and `audio-playback`, are automatically connected to all snaps. These interfaces are marked with ["auto-connect" in the documentation](https://snapcraft.io/docs/supported-interfaces). When a snap is installed, it will be automatically connected to any such interfaces it requests.
 * Reviewed auto-connects: app developers can request additional automatic permissions for their application [using the permission request process](https://snapcraft.io/docs/permission-requests). The Snap Store team will review the security implications of automatically connecting this interface to all users of the snap.
 
-Since the `network-bind` interface is globally auto-connected, installing this snap will immediately give it the permissions it needs.
+Since the `removable-media` interface is not globally auto-connected, installing this snap will not immediately give it access to USB storage. Instead, users have to manually give your snap this permission before it can access files there.
+
+Many desktop application frameworks such as GTK and Qt need talk to dbus for basic functionality. To enable this, you need to create a slot of the `session-dbus-interface`. The name is the unique identifier of your application. For more information, see [The DBus Interface](https://snapcraft.io/docs/dbus-interface).
+
+```yaml
+slots:
+  session-dbus-interface:
+    interface: dbus
+    name: org.gtk.example
+    bus: session
+```
 
 ## Building the snap
 
-Now that all these things are in place, we can build the snap using [`snapcraft`](https://snapcraft.io/docs/snapcraft-overview). Simply open a terminal, go to this directory, and run the following command:
+Now that all these things are in place, we can build the snap using [`snapcraft`](https://snapcraft.io/docs/snapcraft-overview). Simply open a terminal, and go to the `hello-world-gtk` directory.
+
+```shell
+cd hello-world-gtk
+```
+
+Then run the following command.
 
 ```shell
 snapcraft --verbose

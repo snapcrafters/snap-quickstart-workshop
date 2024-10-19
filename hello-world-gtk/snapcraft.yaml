@@ -8,10 +8,16 @@ confinement: strict
 
 apps:
   hello-world-gtk:
+    extensions: [gnome]
     command: src/hello-world-gtk
     plugs:
-      - x11
-      - wayland
+      - removable-media
+
+slots:
+  session-dbus-interface:
+    interface: dbus
+    name: org.gtk.example
+    bus: session
 
 parts:
   hello-world-gtk:
@@ -25,6 +31,3 @@ parts:
       craftctl default
     build-packages:
       - pkgconf
-      - libgtk-4-dev
-    stage-packages:
-      - libgtk-4-1
