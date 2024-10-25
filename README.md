@@ -2,14 +2,59 @@
 
 Welcome to the Snap Quickstart workshop! For an introduction, take a look at [the introductory presentation](https://docs.google.com/presentation/d/1RF5gkTIRI0UiP0Dwusphb-n-Ld1UwqtKZY7LR50k8CU/edit?usp=sharing).
 
-## Getting started
+## Getting started on Windows
+
+On Windows, it's best to install Ubuntu 24.04 in WSL. To install WSL, open PowerShell or Windows Command Prompt in administrator mode by right-clicking and selecting "Run as administrator", enter the command below, then restart your machine.
+
+```shell
+wsl --install -d Ubuntu-24.04
+```
+
+For more information, see [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
+## Getting started on non-Ubuntu Linux distributions
+
+Please first make sure snapd is installed in your system. To install snapd, follow the guide [installing snapd](https://snapcraft.io/docs/installing-snapd). This is not required on Ubuntu
+
+Afterwards, run the following command to add classic snap support.
+
+```shell
+sudo ln -s /var/lib/snapd/snap /snap #Classic snap support
+```
+
+## Installing snapcraft
+
+Next, you install LXD. This tool will be used to manage the containers that are used to build your application. This is a requirement.
+
+```shell
+sudo snap install lxd
+sudo adduser `whoami` lxd
+```
+
+Next, we install snapcraft itself. This is the tool used to build snaps.
+
+```shell
+sudo snap install snapcraft --classic
+```
+
+Finally, you need to install VSCode. For example, on Ubuntu, you can simply run the following command.
+
+```shell
+sudo snap install code --classic
+```
+
+## Last resort: Ubuntu in a VM
+
+If the other methods fail, you can also run Ubuntu in a VM.
 
 Download the virtual machine for your hypervisor of choice:
 
 * VirtualBox: https://cloud.ilabt.imec.be/index.php/s/4AYaQSJeYDEdYxL
 * VMWare: https://cloud.ilabt.imec.be/index.php/s/BS4n37bsJTsGERi
 
-Run the VM and check if you have network connectivity. If you do, run the following commands in a termninal.
+## Download the workshop template code
+
+Run the VM and download the template code and open VSCode.
 
 ```bash
 git clone https://github.com/snapcrafters/snap-quickstart-workshop.git
@@ -56,34 +101,7 @@ confinement: strict
 
 > Some special applications like an IDE can use a second type of confinement: `classic`. This means your application has full access to the host system. This is not recommended for most apps, however, because it is much harder to make your application work like that, and it is much less secure.
 
-The next step is to define how to build your application. You can split this up into multiple "parts", if your application is composed out of multiple components that need to be built separately. For example, if you have an application with a Java and a Python component, you will need to use at least two parts.
-
-For this application, however, we need only a single part.
-
-```yaml
-parts:
-  hello-world-gtk:
-    plugin: dump
-    source: .
-    override-build: |
-      set -eux
-      cd src
-      gcc $(pkg-config --cflags gtk4) -o hello-world-gtk hello-world-gtk.c $(pkg-config --libs gtk4)
-      cd ..
-      craftctl default
-    build-packages:
-      - pkgconf
-      - libgtk-4-dev
-    stage-packages:
-      - libgtk-4-1
-
-```
-
-* `plugin` specifies what build tool to use. Take a look at the list of [supported plugins](https://snapcraft.io/docs/supported-plugins) to see what languages are supported.
-* `source` explains where to find the source code for this part. This can be a local directory, or it can be remote, such as a GitHub repository, or a zip file to download. We use `.` to specify the sources are in the current directory.
-* `stage-packages` describes what additional packages from [the Ubuntu archive](https://packages.ubuntu.com/jammy/allpackages) your application needs. These are the applications you normally install using `apt` in order to get your app to work on Ubuntu.
-
-Now you define how to start your application. One snap can have multiple apps inside of it. In this case, we only have a single command: the webserver.
+Now you define how to start your application. One snap can have multiple apps inside of it. In this case, we only have a single command: the hello world gtk app.
 
 ```yaml
 apps:
@@ -94,6 +112,7 @@ apps:
       - removable-media
 ```
 
+* `extensions` specifies what framework your app will use. Many frameworks are supported by extensions such as Gnome, KDE, and flutter. For other desktop application frameworks, the `gnome` extension will work great. For example, if you're snapping a game, it's best to use the `gnome` extension, simply to get support for desktop applications. For more information, see [Snapcraft Extensions](https://snapcraft.io/docs/snapcraft-extensions).
 * `command` specifies how to start your application. This is relative from the root of your snap.
 * `plugs` specifies what permissions your application wants. `network-bind` means that your application has access to the network and can listen (bind) to a port. Take a look at all the [permissions snap supports](https://snapcraft.io/docs/supported-interfaces).
 
@@ -114,6 +133,30 @@ slots:
     name: org.gtk.example
     bus: session
 ```
+
+The next step is to define how to build your application. You can split this up into multiple "parts", if your application is composed out of multiple components that need to be built separately. For example, if you have an application with a Java and a Python component, you will need to use at least two parts.
+
+For this application, however, we need only a single part.
+
+```yaml
+parts:
+  hello-world-gtk:
+    plugin: dump
+    source: .
+    override-build: |
+      set -eux
+      cd src
+      gcc $(pkg-config --cflags gtk4) -o hello-world-gtk hello-world-gtk.c $(pkg-config --libs gtk4)
+      cd ..
+      craftctl default
+    build-packages:
+      - pkgconf
+
+```
+
+* `plugin` specifies what build tool to use. Take a look at the list of [supported plugins](https://snapcraft.io/docs/supported-plugins) to see what languages are supported.
+* `source` explains where to find the source code for this part. This can be a local directory, or it can be remote, such as a GitHub repository, or a zip file to download. We use `.` to specify the sources are in the current directory.
+* `stage-packages` describes what additional packages from [the Ubuntu archive](https://packages.ubuntu.com/jammy/allpackages) your application needs. These are the applications you normally install using `apt` in order to get your app to work on Ubuntu.
 
 ## Building the snap
 
