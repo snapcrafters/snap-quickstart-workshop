@@ -22,14 +22,18 @@ Afterwards, run the following command to add classic snap support.
 sudo ln -s /var/lib/snapd/snap /snap #Classic snap support
 ```
 
-## Installing snapcraft
+## Installing LXD
 
 Next, you install LXD. This tool will be used to manage the containers that are used to build your application. This is a requirement.
 
 ```shell
 sudo snap install lxd
 sudo adduser `whoami` lxd
+newgrp lxd
+lxd init --auto
 ```
+
+## Installing snapcraft
 
 Next, we install snapcraft itself. This is the tool used to build snaps.
 
@@ -37,7 +41,9 @@ Next, we install snapcraft itself. This is the tool used to build snaps.
 sudo snap install snapcraft --classic
 ```
 
-Finally, you need to install VSCode. For example, on Ubuntu, you can simply run the following command.
+## Installing a text editor
+
+Finally, you need to install a text editor, like VSCode. On Ubuntu, you can simply run the following command to install VSCode.
 
 ```shell
 sudo snap install code --classic

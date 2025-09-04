@@ -1,0 +1,27 @@
+name: yq
+version: 'v4.47.1'
+summary: A lightweight and portable command-line data file processor
+description: |
+  `yq` uses [jq](https://github.com/stedolan/jq) like syntax but works with yaml, json, xml, csv, properties and TOML files.
+base: core24
+
+confinement: strict
+grade: stable
+
+platforms:
+  amd64:
+
+apps:
+  yq:
+    command: bin/yq
+    plugs: [home, removable-media]
+
+parts:
+  yq:
+    plugin: go
+    build-environment:
+      - CGO_ENABLED: 0
+    source: https://github.com/mikefarah/yq.git
+    source-tag: v4.47.1
+    build-snaps:
+      - go/latest/stable
