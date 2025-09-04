@@ -13,7 +13,6 @@ platforms:
 apps:
   yq:
     command: bin/yq
-    plugs: [home, removable-media]
 
 parts:
   yq:
