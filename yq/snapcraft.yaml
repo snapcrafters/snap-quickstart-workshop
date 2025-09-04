@@ -5,6 +5,7 @@ description: |
   `yq` uses [jq](https://github.com/stedolan/jq) like syntax but works with yaml, json, xml, csv, properties and TOML files.
 base: core24
 
+grade: stable
 confinement: strict
 
 platforms:
